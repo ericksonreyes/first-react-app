@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+
+  npm:
+    build:
+      context: .
+      dockerfile: docker/npm.Dockerfile
+    volumes:
+    - './:/var/www/html:delegated'
+    - 'npm_cache:/root/.npm'
+    network_mode: host
+    container_name: 'npm'
+
+  server:
+    build:
+      context: .
+      dockerfile: docker/server.Dockerfile
+    volumes:
+    - './:/var/www/html:delegated'
+    - 'npm_cache:/root/.npm'
+    ports:
+      - "3000:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    container_name: 'server'
+
+  npx:
+    build:
+      context: .
+      dockerfile: docker/npx.Dockerfile
+    volumes:
+      - './:/var/www/html:delegated'
+      - 'npm_cache:/root/.npm'
+    tty: true
+    network_mode: host
+    container_name: 'npx'
+
+volumes:
+  npm_cache:
